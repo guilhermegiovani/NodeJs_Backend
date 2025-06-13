@@ -3,20 +3,49 @@
 const express = require("express")
 const app = express()
 const { engine } = require("express-handlebars")
-const Sequelize = require("sequelize")
+const bodyParser = require("body-parser")
+const Post = require("./models/Post")
+const { where } = require("sequelize")
+
 
 // Config
     // Template Engine
         app.engine('handlebars', engine({ defaultLayout: "main" }))
         app.set("view engine", "handlebars")
-    // Conexão com o banco de dados MySql
-        const sequelize = new Sequelize('test', 'root', '0305091011', {
-            host: "localhost",
-            dialect: "mysql"
-        })
+    // Body Parser
+        app.use(bodyParser.urlencoded({extended: false}))
+        app.use(bodyParser.json())
+    
 // Rotas
-    app.get("/cad", function(req, res) {
+    app.get("/", (req, res) => {
+        Post.findAll({order: [['id', 'DESC']]}).then((posts) => {
+            res.render("home", {posts : posts.map(post => post.toJSON())})
+        })
+    })
+
+    app.get("/cad", (req, res) => {
         res.render('form')
+    })
+
+    app.post("/addPostagem", (req, res) => {
+
+        Post.create({
+            titulo: req.body.titulo,
+            conteudo: req.body.conteudo
+        }).then(() => {
+            res.redirect("/")
+        }).catch((erro) => {
+            res.send(`Houve um erro: ${erro}`)
+        })
+
+    })
+
+    app.get("/deletar/:id", (req, res) => {
+        Post.destroy({where: {'id': req.params.id}}).then(() => {
+            res.send("Postagem deletada com sucesso!")
+        }).catch((erro) => {
+            res.send("Esta postagem não existe!")
+        })
     })
 
 
