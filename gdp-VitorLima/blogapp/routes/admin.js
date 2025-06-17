@@ -3,6 +3,8 @@ const router = express.Router()
 const mongoose = require("mongoose")
 require("../models/Categoria")
 const Categoria = mongoose.model("categorias")
+require("../models/Postagem")
+const Postagem = mongoose.model("postagens")
 
 function validarCategoria(body) {
     const erros = []
@@ -21,6 +23,43 @@ function validarCategoria(body) {
 
     if (nome.length < 2) {
         erros.push({ texto: "Nome da categoria muito pequeno!" })
+    }
+
+    return erros
+}
+
+function validarPostagem(body) {
+    const erros = []
+
+    const titulo = body.titulo.trim()
+    const slug = body.slug.trim()
+    const descricao = body.descricao.trim()
+    const conteudo = body.conteudo.trim()
+    const categoria = body.categoria
+    
+
+    if (!titulo || typeof titulo == undefined || titulo == null) {
+        erros.push({ texto: "Nome inválido!" })
+    }
+
+    if (!slug || typeof slug == undefined || slug == null) {
+        erros.push({ texto: "Slug inválido!" })
+    }
+
+    if (!descricao || typeof descricao == undefined || descricao == null) {
+        erros.push({ texto: "Descrição inválido!" })
+    }
+
+    if (!conteudo || typeof conteudo == undefined || conteudo == null) {
+        erros.push({ texto: "Conteúdo inválido!" })
+    }
+
+    if(categoria == "0") {
+        erros.push({texto: "Categoria inválida, registre uma categoria!"})
+    }
+
+    if (titulo.length < 2) {
+        erros.push({ texto: "Título da postagem muito pequeno!" })
     }
 
     return erros
@@ -118,6 +157,50 @@ router.post("/categorias/deletar", (req, res) => {
         req.flash("error_msg", `Houve um erro ao deletar categoria: ${err}`)
         res.redirect("/admin/categorias")
     })
+})
+
+router.get("/postagens", (req, res) => {
+    res.render("admin/postagens")
+})
+
+router.get("/postagens/add", (req, res) => {
+    Categoria.find().lean().then((categorias) => {
+        res.render("admin/addpostagem", {categorias: categorias})
+    }).catch((err) => {
+        req.flash("error_msg", `Houve um erro ao carregar formulário: ${err}`)
+        res.redirect("/admin")
+    })
+})
+
+router.post("/postagens/nova", (req, res) => {
+    const erros = validarPostagem(req.body)
+
+    // if(req.body.categoria == "0") {
+    //     erros.push({texto: "Categoria inválida, registre uma categoria!"})
+    // }
+
+    if(erros.length > 0) {
+        const mensagens = erros.map(e => e.texto).join(" | ")
+        req.flash("error_msg", mensagens)
+        res.redirect("/admin/postagens")
+    } else {
+        const novaPostagem = {
+            titulo: req.body.titulo,
+            slug: req.body.slug,
+            descricao: req.body.descricao,
+            conteudo: req.body.conteudo,
+            categoria: req.body.categoria
+        }
+
+        new Postagem(novaPostagem).save().then(() => {
+            req.flash("success_msg", "Postagem criada com sucesso!")
+            res.redirect("/admin/postagens")
+        }).catch((err) => {
+            req.flash("error_msg", `Houve um erro durante o salvamento da postagem: ${err}`)
+            res.redirect("/admin/postagens")
+        })
+    }
+
 })
 
 module.exports = router
