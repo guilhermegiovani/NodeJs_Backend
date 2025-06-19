@@ -23,7 +23,7 @@ const Postagem = new Schema({
         ref: "categorias",
         require: true
     },
-    date: {
+    data: {
         type: Date,
         default: Date.now()
     }
