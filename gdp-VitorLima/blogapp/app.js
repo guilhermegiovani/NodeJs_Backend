@@ -15,6 +15,7 @@ const Categoria = mongoose.model("categorias")
 const usuarios = require("./routes/usuario")
 const passport = require("passport")
 require("./config/auth")(passport)
+require("dotenv").config();
 
 // Configurações
 
@@ -48,11 +49,16 @@ app.set("view engine", "handlebars")
 
 // Mongoose
 mongoose.Promise = global.Promise
-mongoose.connect("mongodb://localhost/blogapp").then(() => {
-    console.log("Conectado ao MongoDB!")
+mongoose.connect(process.env.MONGO_URI).then(() => {
+    console.log("Conectado ao MongoAtlas!")
 }).catch((err) => {
-    console.log(`Erro ao se conectar com o MongoDB: ${err}`)
+    console.log(`Erro ao se conectar com o MongoAtlas: ${err}`)
 })
+// mongoose.connect("mongodb://localhost/blogapp").then(() => {
+//     console.log("Conectado ao MongoDB!")
+// }).catch((err) => {
+//     console.log(`Erro ao se conectar com o MongoDB: ${err}`)
+// })
 
 // Public
 app.use(express.static(path.join(__dirname, "public")))
