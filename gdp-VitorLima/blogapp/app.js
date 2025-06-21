@@ -131,5 +131,5 @@ app.use("/usuarios", usuarios)
 // Outros
 const PORT = process.env.PORT || 3000
 app.listen(PORT, () => {
-    console.log(`Servidor Rodando! http://localhost:${PORT}`)
+    console.log(`Servidor Rodando na porta ${PORT}`)
 })
