@@ -36,6 +36,7 @@ app.use((req, res, next) => {
     res.locals.error_msg = req.flash("error_msg")
     res.locals.error = req.flash("error")
     res.locals.user = req.user || null
+    res.locals.eAdmin = req.eAdmin
     next()
 })
 
@@ -44,17 +45,32 @@ app.use(bodyParser.urlencoded({ extended: true }))
 app.use(bodyParser.json())
 
 // Handlebars
-app.engine("handlebars", engine({ defaultLayout: 'main' }))
+const hbs = engine({
+    defaultLayout: 'main',
+    helpers: {
+        ifAdmin: function(user, options) {
+            if(user && user.eAdmin == 1) {
+                return options.fn(this)
+            } else {
+                return options.inverse(this)
+            }
+        }
+    }
+})
+
+app.engine("handlebars", hbs)
 app.set("view engine", "handlebars")
 app.set("views", path.join(__dirname, "views"));
 
 // Mongoose
 mongoose.Promise = global.Promise
+
 mongoose.connect(process.env.MONGO_URI).then(() => {
     console.log("Conectado ao MongoAtlas!")
 }).catch((err) => {
     console.log(`Erro ao se conectar com o MongoAtlas: ${err}`)
 })
+
 // mongoose.connect("mongodb://localhost/blogapp").then(() => {
 //     console.log("Conectado ao MongoDB!")
 // }).catch((err) => {
@@ -130,6 +146,7 @@ app.use("/usuarios", usuarios)
 
 // Outros
 const PORT = process.env.PORT || 3000
+// const PORT = 3000
 app.listen(PORT, () => {
     console.log(`Servidor Rodando na porta ${PORT}`)
 })

@@ -4,7 +4,11 @@
         <p class="col-md-8 fs-5">Este é um BLOG simples, desenvolvido com Node.js + Express + MongoDB.</p>
         <hr>
         <p>Aqui você vai poder ler sobre as  novidades do mundo da computação.</p>
-        <a href="/usuarios/registro"><button class="btn btn-primary btn-lg" type="button">Crie uma conta</button></a>
+        {{#if user}}
+
+        {{else}}
+            <a href="/usuarios/registro"><button class="btn btn-primary btn-lg" type="button">Crie uma conta</button></a>
+        {{/if}}
     </div>
 </div>
 
