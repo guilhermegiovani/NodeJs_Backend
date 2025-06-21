@@ -46,6 +46,7 @@ app.use(bodyParser.json())
 // Handlebars
 app.engine("handlebars", engine({ defaultLayout: 'main' }))
 app.set("view engine", "handlebars")
+app.set("views", path.join(__dirname, "views"));
 
 // Mongoose
 mongoose.Promise = global.Promise
@@ -128,7 +129,7 @@ app.use("/usuarios", usuarios)
 
 
 // Outros
-const PORT = 8081
+const PORT = process.env.PORT || 3000
 app.listen(PORT, () => {
     console.log(`Servidor Rodando! http://localhost:${PORT}`)
 })
