@@ -1,3 +1,4 @@
+// criando rotas com node
 const http = require('http')
 const port = 3000
 const host = '127.0.0.1'

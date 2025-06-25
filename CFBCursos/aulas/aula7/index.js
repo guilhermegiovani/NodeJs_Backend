@@ -1,3 +1,4 @@
+// modulos
 const express = require("express")
 const router = require('./rotas/rotas')
 const port = process.env.PORT || 3000

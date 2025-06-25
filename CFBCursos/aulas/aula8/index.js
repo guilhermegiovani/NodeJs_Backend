@@ -1,3 +1,4 @@
+// mysql2
 (async () => {
     const db = require("./db")
 
